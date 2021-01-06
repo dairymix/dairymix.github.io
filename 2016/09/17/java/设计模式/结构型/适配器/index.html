@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.8.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dairymix.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="定义：  将一个类的接口转换成客户希望的另外一个接口。  使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。  描述形式的转义式封装解决思路：  使两边的接口匹配起来，就可以复用旧功能。  定义适配器类来实现新接口，然后在内部实现时调用老接口已经实现的功能，通过对象组合的方式来复用原始功能。功能：  进行转换匹配，新接口的实现可以复用已有的功能。（客户端需要的功能应该是已经实现好了的，不需">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-结构型-适配器">
+<meta property="og:url" content="http://dairymix.github.io/2016/09/17/java/设计模式/结构型/适配器/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="定义：  将一个类的接口转换成客户希望的另外一个接口。  使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。  描述形式的转义式封装解决思路：  使两边的接口匹配起来，就可以复用旧功能。  定义适配器类来实现新接口，然后在内部实现时调用老接口已经实现的功能，通过对象组合的方式来复用原始功能。功能：  进行转换匹配，新接口的实现可以复用已有的功能。（客户端需要的功能应该是已经实现好了的，不需">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2016-09-17T13:34:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-结构型-适配器">
+<meta name="twitter:description" content="定义：  将一个类的接口转换成客户希望的另外一个接口。  使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。  描述形式的转义式封装解决思路：  使两边的接口匹配起来，就可以复用旧功能。  定义适配器类来实现新接口，然后在内部实现时调用老接口已经实现的功能，通过对象组合的方式来复用原始功能。功能：  进行转换匹配，新接口的实现可以复用已有的功能。（客户端需要的功能应该是已经实现好了的，不需">
+
+<link rel="canonical" href="http://dairymix.github.io/2016/09/17/java/设计模式/结构型/适配器/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>设计模式-结构型-适配器 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://dairymix.github.io/2016/09/17/java/设计模式/结构型/适配器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="dairymix">
+      <meta itemprop="description" content>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          设计模式-结构型-适配器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2016-09-17 21:32:25 / 修改时间：21:34:13" itemprop="dateCreated datePublished" datetime="2016-09-17T21:32:25+08:00">2016-09-17</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>定义：<br>  将一个类的接口转换成客户希望的另外一个接口。<br>  使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。<br>  描述形式的转义式封装<br>解决思路：<br>  使两边的接口匹配起来，就可以复用旧功能。<br>  定义适配器类来实现新接口，然后在内部实现时调用老接口已经实现的功能，通过对象组合的方式来复用原始功能。<br>功能：<br>  进行转换匹配，新接口的实现可以复用已有的功能。（客户端需要的功能应该是已经实现好了的，不需要适配器模式来实现）<br>  适配器主要负责将不兼容的接口转换成客户期望的样子就可以。<br>  然后客户端可以通过新接口和适配器来共同完成功能矩阵的扩展。<br>  智能适配器：<br>    在适配器中实现一些额外的功能<br>  adaptee：<br>    被适配的接口（旧功能）<br>  target：<br>    待实现的目标接口（新功能）<br>关系：<br>  adaptee和target中的方法既可以相同，也可以不同，它们没有直接关联。<br>  适配器的实现是依靠对象组合的方式。<br>  通过给适配器对象组合被适配的对象，然后当target被调用的时候，适配器会把相应的功能委托给被适配的对象去完成。<br>实现：<br>  常用实现：<br>    通常适配器是一个类，它来实现target接口。然后在具体的实现中调用adaptee。（适配器是target类型）<br>  智能适配器：<br>    如果使用智能适配器，一般新加入的功能会用到很多adaptee的功能，相当于利用adaptee的功能来实现更高层的功能。<br>    也可以完全实现新加入的功能，和已有的功能都不相关，变相的扩展了功能。<br>  适配多个adaptee<br>    新的target功能可以是由原有的旧功能集构成（可以调用多个模块的功能完成）<br>  实现适配器的复杂度<br>    取决于target和adaptee的相似程度。<br>    如果相似程度很高，只是方法名称不一致，那么只需要转调接口就可以满足。<br>    如果相似程度很低，比如两边的方法定义的功能完全不一致，那么就要考虑组合调用或新实现的问题。<br>  缺省适配<br>    为一个接口提供了缺省实现。<br>    有了默认实现就不用直接去实现接口，而是通过继承该缺省对象，从而让子类可以有选择的去覆盖实现需要的方法。<br>    对于不需要的方法，可以直接采用缺省适配的方法<br>扩展：<br>  双向适配器<br>    利用多继承的特性，可以使适配器同时进行双向适配，将适配器同时当做adaptee和target来使用。<br>    注意：<br>      原始适配器被适配的对象不再兼容adaptee的接口，因为适配器只实现了target的接口，<br>      导致不是所有adaptee对象可以被使用的地方都能使用适配器。<br>      因此双向适配器就解决了这个问题。（两个不同的客户需要用不同的方式来查看同一个对象的情况）<br>  对象适配器<br>    依赖于对象组合<br>  类适配器<br>    采用多重继承对一个接口与另一个接口进行匹配。（java不支持多继承，可以采用分别采用单继承和单接口来变相实现）<br>    注意：<br>      真正的功能实现中，类适配器和对象适配器两种方式差不多。<br>权衡：<br>  实现：<br>    类适配器使用对象继承的方式，是静态的定义方式，对象适配器使用对象组合的方式，是动态组合的方式<br>  继承：<br>    类适配器由于直接继承adaptee，使得适配器不能和adaptee的子类一起工作（继承是静态关系）<br>    对象适配器允许一个适配器配置多个adaptee，包括adaptee和它所有的子类一起工作（采用对象组合的关系）<br>  重载：<br>    类适配器可以重定义adaptee的部分行为，相当于子类覆盖父类的部分实现方法。<br>    对象适配器要重定义adaptee的行为比较困难，需要定义adaptee的子类来实现重定义，然后让适配器组合子类。<br>  引用对象：<br>    类适配器仅仅引入了一个对象，并不需要额外的引用来间接得到adaptee。<br>    对象适配器需要额外的引用来间接得到adaptee。<br>  推荐：<br>    建议尽量使用对象适配器的实现方式（除去解决具体问题外）<br>优点：<br>  更好的复用性：如果功能已经存在，只是接口不兼容，那么通过适配器就可以让功能得到更好的复用<br>  更好的可扩展性：实现适配器功能时，可以通过调用自己提供的增强性功能来进行扩展（智能适配器）<br>缺点：<br>  过多的使用适配器，会导致系统结构杂乱，不便于整体观察和梳理（通常需要借助调用链工具来辅助分析）<br>本质：<br>  转换匹配，复用功能。（接口转义，因此你以为的不一定就是你以为的。。）<br>场景：<br>  使用一个已存在的类，但接口不符合你的要求的情况下，把已有实现转换成你需要的接口<br>  创建一个可以复用的类，这个类可能和一些不兼容的类一起工作，到时候需要什么就可以适配什么<br>  想使用一些已经存在的子类，但不可能对每个子类都进行适配时，可以选用对象适配器来直接适配这些子类的父类<br>相关模式：<br>  桥接模式：<br>    除了结构略为相似外，功能（目的）上完全不同<br>    适配器把两个或多个接口的功能进行转换匹配，桥接则是让接口和实现部分相分离，以便于它们可以相对独立的变化<br>  装饰模式：<br>    适配器可以模拟实现简单的装饰模式的功能，即为已有功能增添功能<br>    造成这样类似的原因是两种设计模式在实现上都是使用的对象组合，<br>    都可以在转调组合对象的功能前后进行一些附加的处理，因此有这么一个相似性。<br>    它们的目的和本质都是不一样的。<br>    最大的不同：<br>      一般适配器适配过后都是需要改变接口的，如果不改接口就没必要适配了。（解决根本问题：接口变更。接口不同，无法递归）<br>      装饰模式是不改变接口的。无论多少层装饰都是一个接口。（更容易支持递归组合）<br>  代理模式：<br>    适配器可以和代理模式组合使用。在实现适配器时可以通过代理来调用adaptee，能增加灵活性。<br>  抽象工厂模式：<br>    在适配器实现时通常需要得到被适配的对象。<br>    如果被适配的是一个接口，那么就可以结合一些可以创造对象实例的设计模式来得到被适配的对象实例，此时就可以和创建型模式组合使用。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/09/16/java/设计模式/结构型/外观/" rel="prev" title="设计模式-结构型-外观">
+      <i class="fa fa-chevron-left"></i> 设计模式-结构型-外观
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dairymix</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-eye"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dairymix</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -5,23 +5,132 @@
   
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://yoursite.com/"/>
-  <updated>2019-04-22T07:14:14.146Z</updated>
-  <id>http://yoursite.com/</id>
+  <link href="http://dairymix.github.io/"/>
+  <updated>2016-09-17T13:34:13.000Z</updated>
+  <id>http://dairymix.github.io/</id>
   
   <author>
-    <name>John Doe</name>
+    <name>dairymix</name>
     
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Hello World</title>
-    <link href="http://yoursite.com/2019/04/22/hello-world/"/>
-    <id>http://yoursite.com/2019/04/22/hello-world/</id>
-    <published>2019-04-22T07:14:14.146Z</published>
-    <updated>2019-04-22T07:14:14.146Z</updated>
+    <title>设计模式-结构型-适配器</title>
+    <link href="http://dairymix.github.io/2016/09/17/java/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%BB%93%E6%9E%84%E5%9E%8B/%E9%80%82%E9%85%8D%E5%99%A8/"/>
+    <id>http://dairymix.github.io/2016/09/17/java/设计模式/结构型/适配器/</id>
+    <published>2016-09-17T13:32:25.000Z</published>
+    <updated>2016-09-17T13:34:13.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>定义：<br>  将一个类的接口转换成客户希望的另外一个接口。<br>  使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。<br>  描述形式的转义式封装<br>解决思路：<br>  使两边的接口匹配起来，就可以复用旧功能。<br>  定义适配器类来实现新接口，然后在内部实现时调用老接口已经实现的功能，通过对象组合的方式来复用原始功能。<br>功能：<br>  进行转换匹配，新接口的实现可以复用已有的功能。（客户端需要的功能应该是已经实现好了的，不需要适配器模式来实现）<br>  适配器主要负责将不兼容的接口转换成客户期望的样子就可以。<br>  然后客户端可以通过新接口和适配器来共同完成功能矩阵的扩展。<br>  智能适配器：<br>    在适配器中实现一些额外的功能<br>  adaptee：<br>    被适配的接口（旧功能）<br>  target：<br>    待实现的目标接口（新功能）<br>关系：<br>  adaptee和target中的方法既可以相同，也可以不同，它们没有直接关联。<br>  适配器的实现是依靠对象组合的方式。<br>  通过给适配器对象组合被适配的对象，然后当target被调用的时候，适配器会把相应的功能委托给被适配的对象去完成。<br>实现：<br>  常用实现：<br>    通常适配器是一个类，它来实现target接口。然后在具体的实现中调用adaptee。（适配器是target类型）<br>  智能适配器：<br>    如果使用智能适配器，一般新加入的功能会用到很多adaptee的功能，相当于利用adaptee的功能来实现更高层的功能。<br>    也可以完全实现新加入的功能，和已有的功能都不相关，变相的扩展了功能。<br>  适配多个adaptee<br>    新的target功能可以是由原有的旧功能集构成（可以调用多个模块的功能完成）<br>  实现适配器的复杂度<br>    取决于target和adaptee的相似程度。<br>    如果相似程度很高，只是方法名称不一致，那么只需要转调接口就可以满足。<br>    如果相似程度很低，比如两边的方法定义的功能完全不一致，那么就要考虑组合调用或新实现的问题。<br>  缺省适配<br>    为一个接口提供了缺省实现。<br>    有了默认实现就不用直接去实现接口，而是通过继承该缺省对象，从而让子类可以有选择的去覆盖实现需要的方法。<br>    对于不需要的方法，可以直接采用缺省适配的方法<br>扩展：<br>  双向适配器<br>    利用多继承的特性，可以使适配器同时进行双向适配，将适配器同时当做adaptee和target来使用。<br>    注意：<br>      原始适配器被适配的对象不再兼容adaptee的接口，因为适配器只实现了target的接口，<br>      导致不是所有adaptee对象可以被使用的地方都能使用适配器。<br>      因此双向适配器就解决了这个问题。（两个不同的客户需要用不同的方式来查看同一个对象的情况）<br>  对象适配器<br>    依赖于对象组合<br>  类适配器<br>    采用多重继承对一个接口与另一个接口进行匹配。（java不支持多继承，可以采用分别采用单继承和单接口来变相实现）<br>    注意：<br>      真正的功能实现中，类适配器和对象适配器两种方式差不多。<br>权衡：<br>  实现：<br>    类适配器使用对象继承的方式，是静态的定义方式，对象适配器使用对象组合的方式，是动态组合的方式<br>  继承：<br>    类适配器由于直接继承adaptee，使得适配器不能和adaptee的子类一起工作（继承是静态关系）<br>    对象适配器允许一个适配器配置多个adaptee，包括adaptee和它所有的子类一起工作（采用对象组合的关系）<br>  重载：<br>    类适配器可以重定义adaptee的部分行为，相当于子类覆盖父类的部分实现方法。<br>    对象适配器要重定义adaptee的行为比较困难，需要定义adaptee的子类来实现重定义，然后让适配器组合子类。<br>  引用对象：<br>    类适配器仅仅引入了一个对象，并不需要额外的引用来间接得到adaptee。<br>    对象适配器需要额外的引用来间接得到adaptee。<br>  推荐：<br>    建议尽量使用对象适配器的实现方式（除去解决具体问题外）<br>优点：<br>  更好的复用性：如果功能已经存在，只是接口不兼容，那么通过适配器就可以让功能得到更好的复用<br>  更好的可扩展性：实现适配器功能时，可以通过调用自己提供的增强性功能来进行扩展（智能适配器）<br>缺点：<br>  过多的使用适配器，会导致系统结构杂乱，不便于整体观察和梳理（通常需要借助调用链工具来辅助分析）<br>本质：<br>  转换匹配，复用功能。（接口转义，因此你以为的不一定就是你以为的。。）<br>场景：<br>  使用一个已存在的类，但接口不符合你的要求的情况下，把已有实现转换成你需要的接口<br>  创建一个可以复用的类，这个类可能和一些不兼容的类一起工作，到时候需要什么就可以适配什么<br>  想使用一些已经存在的子类，但不可能对每个子类都进行适配时，可以选用对象适配器来直接适配这些子类的父类<br>相关模式：<br>  桥接模式：<br>    除了结构略为相似外，功能（目的）上完全不同<br>    适配器把两个或多个接口的功能进行转换匹配，桥接则是让接口和实现部分相分离，以便于它们可以相对独立的变化<br>  装饰模式：<br>    适配器可以模拟实现简单的装饰模式的功能，即为已有功能增添功能<br>    造成这样类似的原因是两种设计模式在实现上都是使用的对象组合，<br>    都可以在转调组合对象的功能前后进行一些附加的处理，因此有这么一个相似性。<br>    它们的目的和本质都是不一样的。<br>    最大的不同：<br>      一般适配器适配过后都是需要改变接口的，如果不改接口就没必要适配了。（解决根本问题：接口变更。接口不同，无法递归）<br>      装饰模式是不改变接口的。无论多少层装饰都是一个接口。（更容易支持递归组合）<br>  代理模式：<br>    适配器可以和代理模式组合使用。在实现适配器时可以通过代理来调用adaptee，能增加灵活性。<br>  抽象工厂模式：<br>    在适配器实现时通常需要得到被适配的对象。<br>    如果被适配的是一个接口，那么就可以结合一些可以创造对象实例的设计模式来得到被适配的对象实例，此时就可以和创建型模式组合使用。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;定义：&lt;br&gt;  将一个类的接口转换成客户希望的另外一个接口。&lt;br&gt;  使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。&lt;br&gt;  描述形式的转义式封装&lt;br&gt;解决思路：&lt;br&gt;  使两边的接口匹配起来，就可以复用旧功能。&lt;br&gt;  定义适配器类来实现新接口，然
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>设计模式-结构型-外观</title>
+    <link href="http://dairymix.github.io/2016/09/16/java/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%BB%93%E6%9E%84%E5%9E%8B/%E5%A4%96%E8%A7%82/"/>
+    <id>http://dairymix.github.io/2016/09/16/java/设计模式/结构型/外观/</id>
+    <published>2016-09-16T13:32:25.000Z</published>
+    <updated>2016-09-16T13:34:13.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>定义：<br>  为子系统的一组接口提供一个一致的界面而抽象出来的高层接口，这个接口使子系统更加容易使用。<br>  可以理解为管理(创建型对象提供的)接口的接口。算时对对象簇通过接口方式进行统一管理的高层接口<br>  界面：和gui不同，这里的界面指代从一个组件外部来看这个组件能看到的部分(外观)<br>  接口：和interface不同，主要指外部和内部交互的通道，通常是一些（类的或interface的）方法<br>应用场景：<br>  多模块整合，对接客户端<br>用途：<br>  引入外观类来简化客户端的操作，将管理整合到模块簇的集成部分。<br>结构：<br>  facade：定义子系统多个模块的高层接口，通常需要调用内部多个模块，把客户的请求代理给适当的子系统对象（facade知道各个模块对象）<br>  模块：接收facade对象的委派，实现各自功能，模块之间可能有交互（各模块之间不应该知道facade对象）<br>目的：<br>  不是给子系统添加新的功能接口，而是为了让外部减少与子系统内多个模块的交互，松散耦合，从而让外部能更简单的使用子系统。<br>  应该是包装已有功能，主要负责组合已有功能来实现客户需要，而不是添加新的实现。<br>优点：<br>  松散耦合<br>    让子系统内部的模块更容易扩展和维护。<br>  简单易用<br>    降低了客户端的开发难度，不再需要了解模块细节，并且和模块进行交互。<br>    提供了优先和缺省的可选项。对特定的客户端开发流程，可以绕过facade而与已知的模块进行直接交互（或覆盖特定模块）来进行差异化处理。<br>    facade可以被多个客户端调用，从而实现功能的共享（复用），从而统合了系统模块的集成流程（对所有客户端都一致）。<br>  更好的划分访问层次<br>    将模块整合封装在了系统部分，屏蔽了外部客户端和系统内部的直接交互，一旦需要调整整合流程，只需要改动facade即可。<br>缺点：<br>  增加系统结构层级划分的复杂度。<br>  过多的facade会容易让人迷惑。<br>  缺省的配置和自定义配置之间的覆盖组合存在逻辑上的依赖关系，不纳入管理会比较危险。<br>实现：<br>  通常实现一个facade类的单例。facade的方法本身不进行功能的处理，方法只是实现一个功能的组合调用。<br>  如果直接将外观中的方法实现成静态方法，就可以不需要创建外观对象的实例而直接调用，这种实现相当于把外观类当成一个辅助工具类实现<br>  也可以实现一个facade的interface。从而配合工厂模式来进行深层封装。只是提高了系统复杂度以及增加了客户端的调用环节。<br>  facade作为interface附带的功能是能有选择性的暴露接口的方法，尽量减少模块对子系统外提供的接口方法。<br>提示：<br>  一个模块的接口中定义的方法可以分成两部分。一部分给子系统外部使用，一部分是子系统内部的模块间相互调用时使用。<br>  有了facade接口，那么用于子系统内部的接口功能就不用暴露给子系统外部了。（避免了接口污染）<br>本质：<br>  封装交互，简化调用。<br>  facade封装了子系统外部和子系统模块内部之间的交互过程，简化了外部的调用。<br>设计原则的体现：<br>  最少知识原则。<br>场景：<br>  希望为一个复杂的子系统提供一个简单接口的时候。使用facade来实现大部分客户需要的功能，从而简化客户的使用。<br>  让客户程序和抽象类的实现部分松散耦合。使用facade来将子系统与它的客户分离开来，从而提高子系统的独立性和可移植性<br>  构建多层结构的系统的时候。使用facade作为每层的入口，可以简化层间调用，可以松散层次之间的依赖关系。<br>相关模式：<br>  中介者：<br>    中介者主要用来封装多个对象之间相互的交互，多用在系统内部的多个模块之间。<br>    外观封装的是单向的交互，是从客户端访问系统的调用，没有从系统来访问客户端的调用。<br>    中介者的实现中是需要实现具体的交互功能。<br>    外观的实现中一般是组合调用或者是转调内部实现的功能，通常外观模式本身并不实现该功能。<br>    中介者的目的主要是松散多个模块之间的耦合，把这些耦合放到中介者中去实现。<br>    外观的目的是简化客户端的调用，强调单向耦合的松散或复杂度的降低。<br>  单例：<br>    通常一个子系统只需要一个外观实例，所以可以和单例组合使用，把facade实现成单例。<br>    也可以将构造方法私有化，提供给客户端的方法实现为静态的。<br>  抽象工厂：<br>    外观类的具体实现里可以通过抽象工厂来获取所需要的模块接口。<br>    抽象工厂也可以将模块内部的实现对facade进行屏蔽，从而对逻辑层进行更进一步的隔离。<br>    使用抽象工厂后，facade也仅仅知道它从模块中获取到想要的功能，模块内部的实现细节它也不再知道。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;定义：&lt;br&gt;  为子系统的一组接口提供一个一致的界面而抽象出来的高层接口，这个接口使子系统更加容易使用。&lt;br&gt;  可以理解为管理(创建型对象提供的)接口的接口。算时对对象簇通过接口方式进行统一管理的高层接口&lt;br&gt;  界面：和gui不同，这里的界面指代从一个组件外部来看
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>设计模式-创建型-简单工厂</title>
+    <link href="http://dairymix.github.io/2016/09/15/java/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%88%9B%E5%BB%BA%E5%9E%8B/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82/"/>
+    <id>http://dairymix.github.io/2016/09/15/java/设计模式/创建型/简单工厂/</id>
+    <published>2016-09-15T13:32:25.000Z</published>
+    <updated>2016-09-15T13:34:13.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>定义：<br>  提供一个创建对象实例的功能，而无须关心其具体实现。被创建实例的类型可以是接口，抽象类，也可以是具体的类。<br>应用场景：<br>  组件，子描述结构<br>  需要完全隔离（封装）具体实现，让外部只能通过接口来操作封装体<br>  将对外创建对象的职责集中管理和控制<br>用途：<br>  提供给对象使用者获取对象的公共途径。配合自身的接口描述来达到提供给外部操作者操作对象的方式。<br>核心：<br>  在外部调用（客户端）在创建对象从而对其进行操作时，<br>  在无从下手的情况下（对象只提供了接口描述，客户端又不能显式对接口进行对象构造），<br>  来告诉外部调用如何构造该对象的工具类和公共操作方法。<br>  重点就在于可以和对象处于相同的逻辑结构层，从而可以和对象同时完成封装。<br>  但是在不破坏封装的条件下又提供给了外部调用一个获取对象创建的途径。<br>特性：<br>  扩展性较强，可以通过简单工厂扩展很多深层结构：<br>  静态工厂：简单工厂的方法作为静态方法时的特定描述<br>    私有工厂：在静态工厂的基础上防止客户端无谓创造简单工厂实例，可以将其的构造方法私有化<br>  万能工厂：可以将不同对象的构造过程放到该类中进行统一管理。此时的工厂类被称之为万能工厂<br>创建对象的范围：<br>  建议通常不要太大，控制在独立组件级别或模块级别，否则不好划分职责。<br>调用顺序：<br>  客户端调用简单工厂中创建对象方法<br>  工厂选择并创建具体实现对象的实例<br>  返回创建好的接口对象<br>  客户端调用该对象接口的方法进行功能处理<br>工厂方法的职责：<br>  实现选择一个合适的实现类来使用。<br>  选择时需要的条件参数来源：<br>    客户端告知（由clinet来传入参数）<br>      缺点：<br>        客户端必须知道选择参数的含义，也需要理解每个参数对应的功能处理（一定程度上会暴露出组件对象自身的内部实现细节）<br>        新增对象实现时需要改动工厂类<br>    配置文件进行描述（从配置文件中获取用于判断的值）<br>      特例：spring的实现方式，描述具现化，ioc/di通过反射来构建<br>    软参（程序运行期的某个参数值，通过缓存或程序功能提供设置，）<br>      特例：springboot的实现方式，将配置文件描述参数化，idl的方式来处理（注解）<br>优点：<br>  帮助封装 （隔断逻辑实现，让客户端面向接口编程）<br>  解耦  （实现客户端和实现类的解耦）<br>缺点：<br>  增加客户端的实现复杂度 （在使用参数来选择具体的对象构造时，需要客户端了解各个参数的具体功能和含义，增加了客户端的使用难度）<br>  不方便扩展子工厂 （在使用静态私有工厂时不能通过子类来扩展或改写创建接口方法的行为了，对对象功能扩展有限制）<br>本质：<br>  选择实现 （重点在选择，实现是已经完成的部分）<br>  可以和其他的创建型模式进行组合使用<br>目的：<br>  为客户端来选择相应的实现，从而使客户端和实现之间解耦。（实现发生变化时不会影响到客户端，而会通过工厂吸收和屏蔽掉）<br>难度：<br>  “如何选择”实现<br>相关模式：<br>  抽象工厂：<br>    简单工厂的场景中进化成针对特定产品簇的实现和管理。通常抽象工厂中的方法和创建对象之间存在依存关系。<br>    可以理解成针对逻辑进行子封装的场景下的简单工厂实现。<br>    如果抽象工厂退化成只有一个实现，并且部分层次，那么就相当于简单工厂。<br>  工厂方法：<br>    将选择的具体实现方式延迟到子类中去提供。逻辑上就是将构造选择进行下移，更侧重对象职能范围的集中管理。<br>    如果将工厂方法中处理选择的实现逻辑来放到父类中完成，那就相当于简单工厂。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;定义：&lt;br&gt;  提供一个创建对象实例的功能，而无须关心其具体实现。被创建实例的类型可以是接口，抽象类，也可以是具体的类。&lt;br&gt;应用场景：&lt;br&gt;  组件，子描述结构&lt;br&gt;  需要完全隔离（封装）具体实现，让外部只能通过接口来操作封装体&lt;br&gt;  将对外创建对象的职责集
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>设计模式-创建型-单例</title>
+    <link href="http://dairymix.github.io/2016/09/14/java/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%88%9B%E5%BB%BA%E5%9E%8B/%E5%8D%95%E4%BE%8B/"/>
+    <id>http://dairymix.github.io/2016/09/14/java/设计模式/创建型/单例/</id>
+    <published>2016-09-14T12:32:25.000Z</published>
+    <updated>2016-09-14T12:34:13.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h1><ul><li>定义：保证一个类仅有一个实例，并提供一个访问它的全局访问点</li><li>实现方式：把创建实例的权限回收，让类自身来负责自己类实例的创建工作，然后由这个类来提供外部可以访问该类实例的方法</li></ul><h1 id="结构："><a href="#结构：" class="headerlink" title="结构："></a>结构：</h1><ul><li>singleton：创建该类自己的唯一实例，并提供一个getInstance方法，让外部来访问这个类的唯一实例</li><li>懒构造：在装载对象时不创建对象实例。只有第一次使用的时候才回去创建实例，就是在getinstance方法里判断和创建</li><li>全构造：在装载对象时直接创建对象实例</li></ul><h1 id="功能："><a href="#功能：" class="headerlink" title="功能："></a>功能：</h1><p>  可以保证类在运行期间只会被创建一个类实例。同时该模式还提供了一个全局唯一访问这个类实例的访问点。（getInstance）<br>  不管采用哪种模式的实现方式，全局访问点是一样的。<br>  不管采用哪种模式的实现方式，都只关心类实例的创建问题，并不关心具体的业务功能。</p><h1 id="范围："><a href="#范围：" class="headerlink" title="范围："></a>范围：</h1><p>  目前java里实现的单例是一个虚拟机的范围。<br>  因为装载类的功能是虚拟机的，所以一个虚拟机在通过自己的classloader装载饿汉式实现单例类的时候就会创建一个类的实例。<br>  也就是说，一个虚拟机里有很多classloader时，如果这些classloader都装载某个单例类时，它仍然会产生多个实例。<br>  如果一个机器上有多个虚拟机，那么每个虚拟机里都应该至少有一个这个类的实例，也就是说整个机器上就有很多个实例，更不是单例了。</p><h1 id="命名："><a href="#命名：" class="headerlink" title="命名："></a>命名：</h1><p>  在不讨论集群环境下的单例模式的条件下，一般建议单例模式方法命名为getInstance，返回为单例类型的参数。<br>  该方法可以有参数，可能是创建类实例所需要的参数，大多数情况下是不需要的。<br>  名称通常为单例，单件，单体等，只是翻译的不同，都是指同一个模式。</p><h1 id="构造："><a href="#构造：" class="headerlink" title="构造："></a>构造：</h1><p>  私有化构造方法<br>  定义存储实例的属性，把这个属性也定义成静态的（全会创建实例并填入该属性）<br>  提供获取实例的方法，把获取实例的方法变成静态的，实现控制实例的创建<br>  懒和全的区别：在实现实力创建时，懒此时才创建实例，全则直接取出之前创建好的实例返回</p><h1 id="思想："><a href="#思想：" class="headerlink" title="思想："></a>思想：</h1><ul><li>延迟加载：一开始不加载资源或数据，等到马上要使用这个资源或数据了才会去加载的方式。（尽可能的节约资源）</li><li>缓存：<br>当某资源或数据被频繁的使用时，这些资源或数据存储在外部时，每次操作这些数据都得从数据库或硬盘上获取，速度会很慢，造成性能问题<br>把这些数据放到一个内存区，每次使用时先去内存区找是否有这些数据，有就直接使用。没有就获取它再放入该区域。<br>这样下次就能直接从内存中获取，从而节省大量的时间。<br>缓存是一种典型的空间交换时间的方案。<blockquote><p>实现方式：<br>  构建一个map容器，在其中查找<br>  如果没有找到，就创建一个满足要求的数据，把它放进去<br>  如果找到了，就取出来直接使用</p></blockquote></li></ul><h1 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h1><p>  限制（约束）对象获取范围以及创建操作<br>  懒构造是典型的时间换空间，全构造是典型的空间换时间</p><h1 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h1><ul><li>线程安全：<br>懒构造不加同步操作时不是线程安全的，全构造是线程安全的<br>可以使用双重检查加锁的方式来实现线程安全</li><li><p>双重检查加锁：</p><ul><li>并不是每次getInstance方法都需要同步，而是先不同步，进入方法过后，先检查实例是否存在，如果不存在才进入下面的同步（第一重检查）进入同步块过后，再次检查实例是否存在，如果不存在，就在同步的情况下创建一个实例（第二重检查）双重检查加锁会使用关键字volatile，意思是被volatile修饰的变量的值，将不会被本地线程缓存。</li><li>所有对该变量的读写都是直接操作共享内存，从而确保多个线程能正确处理该变量。</li></ul><blockquote><p>在java1.4以及以前版本中，很多jvm对volatile关键字的实现有问题，会导致双重检查加锁的失败，因此双重检查加锁机制只能用在java5及以上版本。</p></blockquote><blockquote><p>由于volatile关键字可能会屏蔽掉虚拟机中一些必要的代码优化，所以运行效率并不是很高。一般建议没有特别必要不要使用。</p></blockquote><blockquote><p>也就是说，虽然可以使用双重检查加锁机制来实现线程安全的单例，但并不建议大量采用，可以根据情况来选用。</p></blockquote></li></ul><h2 id="优化："><a href="#优化：" class="headerlink" title="优化："></a>优化：</h2><p>  lazy initialization holder class：<br>    综合使用了java的类级内部类和多线程缺省同步锁的方式，同时实现了延迟加载和线程安全。</p><ul><li>基础内容：<ul><li>类级内部类：<br>有static修饰的成员内部类。如果没有static修饰的成员内部类被称为对象级内部类。<br>类级内部类相当于其外部类的static成分，它的对象与外部类对象间不存在依赖关系，因此可直接创建。<br>对象级内部类的实例是绑定在外部对象实例中的。<br>类级内部类中可以定义静态的方法。在静态方法中只能引用外部类中的静态成员方法或成员变量。<br>类级内部类相当于其外部类的成员，只有在第一次被使用时才会被加载。</li><li>多线程缺省同步锁：<br>在某些情况下，jvm已经隐含的执行了同步，可以不再需要用户来手工进行同步操作控制：<br>  静态初始化器（在静态字段上或static{}块中的初始化器）初始化数据时<br>  访问final字段时<br>  在创建线程之前创建对象时<br>  线程可以看见它将要处理的对象时</li></ul></li><li>方案思路：<br>  采用类级内部类，在类级内部类里去创建对象实例。<br>  这样只要不使用到这个类级内部类，那就不会创建对象实例，从而同时实现延迟加载和线程安全。<br>  这个模式的优势在于，getInstance方法并没有被同步，并且只是执行一个域的访问，因此延迟初始化并没有增加任何访问成本。</li></ul><h2 id="枚举法："><a href="#枚举法：" class="headerlink" title="枚举法："></a>枚举法：</h2><p>  单元素的枚举类型已经成为实现singleton的最佳方法。</p><ul><li>基础内容：<br>  java的枚举类型实质上是功能齐全的类，因此可以有自己的属性和方法。<br>  枚举类型的基本思想是通过公有的静态final域来为每个枚举常量导出实例的类。<br>  从某个角度上看，枚举是单例的范型化，本质上单例是单元素的枚举。</li><li>方案思路：<br>  编写一个包含单元素的枚举类型即可。<br>  使用该方式实现单例会更加简洁，而且无偿提供了序列化的机制，并由jvm从根本上提供保障，<br>  绝对防止多次实例化，是更简洁，高效，安全的实现方式。</li></ul><h1 id="本质："><a href="#本质：" class="headerlink" title="本质："></a>本质：</h1><p>  控制实例数目。<br>  控制在运行期内某些类的实例只能有一个。<br>  如果需要控制有限个（最优状态为3个）可以利用容器类（map）来缓存单例的实例</p><h1 id="场景："><a href="#场景：" class="headerlink" title="场景："></a>场景：</h1><p>  当需要控制一个类的实例只能有一个，而且客户只能从一个全局访问点访问它时，可以选用单例模式</p><h1 id="相关模式："><a href="#相关模式：" class="headerlink" title="相关模式："></a>相关模式：</h1><p>  所有存在对类的实例进行控制的模式都会用到。比如抽象工厂中具体工厂类就通常是一个单例。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;概念：&quot;&gt;&lt;a href=&quot;#概念：&quot; class=&quot;headerlink&quot; title=&quot;概念：&quot;&gt;&lt;/a&gt;概念：&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;定义：保证一个类仅有一个实例，并提供一个访问它的全局访问点&lt;/li&gt;
+&lt;li&gt;实现方式：把创建实例的权限回收，让类自身来
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>设计模式-基础</title>
+    <link href="http://dairymix.github.io/2016/09/12/java/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%9F%BA%E7%A1%80/"/>
+    <id>http://dairymix.github.io/2016/09/12/java/设计模式/基础/</id>
+    <published>2016-09-12T13:32:25.000Z</published>
+    <updated>2016-09-12T13:34:13.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h1><ul><li>模式：模版或模型的方式或方法</li><li>设计模式：经过验证的，用于解决在特定环境下，重复出现的，特定问题的解决方案</li><li>软件的设计模式：特定领域（软件）下的设计模式</li></ul><h1 id="组成："><a href="#组成：" class="headerlink" title="组成："></a>组成：</h1><ul><li>模式名称：设计模式的名字</li><li>环境和问题：什么场景下出现的特定问题</li><li>解决方案：如何解决这个问题</li><li>效果：模式应用的效果，可能带来的问题，使用中需要权衡的问题</li></ul><h1 id="java领域内的划分："><a href="#java领域内的划分：" class="headerlink" title="java领域内的划分："></a>java领域内的划分：</h1><ul><li>Java设计模式：特指GoF提出的</li><li>javaEE设计模式：特指sun提出的</li><li>其他领域：ejb的设计模式，实时系统的设计模式，多线程的设计模式，架构模式</li></ul><h1 id="分类："><a href="#分类：" class="headerlink" title="分类："></a>分类：</h1><ul><li>创建型模式：抽象了对象实例化过程，用来帮助创建对象的实例 （对象生命周期的定义或描述）</li><li>结构型模式：描述如何组合类和对象来获得更大的结构 （对象群集的声明周期的定义或描述）</li><li>行为型模式：描述算法和对象间职责的分配 （对象或对象群集在生命中期中的行为管理）</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;概念：&quot;&gt;&lt;a href=&quot;#概念：&quot; class=&quot;headerlink&quot; title=&quot;概念：&quot;&gt;&lt;/a&gt;概念：&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;模式：模版或模型的方式或方法&lt;/li&gt;
+&lt;li&gt;设计模式：经过验证的，用于解决在特定环境下，重复出现的，特定问题的解决方
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Hexo Help</title>
+    <link href="http://dairymix.github.io/2016/07/13/help/"/>
+    <id>http://dairymix.github.io/2016/07/13/help/</id>
+    <published>2016-07-13T12:46:25.000Z</published>
+    <updated>2016-07-13T12:47:13.000Z</updated>
     
     <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
     

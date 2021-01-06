@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.8.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dairymix.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="概念： 定义：保证一个类仅有一个实例，并提供一个访问它的全局访问点 实现方式：把创建实例的权限回收，让类自身来负责自己类实例的创建工作，然后由这个类来提供外部可以访问该类实例的方法  结构： singleton：创建该类自己的唯一实例，并提供一个getInstance方法，让外部来访问这个类的唯一实例 懒构造：在装载对象时不创建对象实例。只有第一次使用的时候才回去创建实例，就是在getinstan">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-创建型-单例">
+<meta property="og:url" content="http://dairymix.github.io/2016/09/14/java/设计模式/创建型/单例/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="概念： 定义：保证一个类仅有一个实例，并提供一个访问它的全局访问点 实现方式：把创建实例的权限回收，让类自身来负责自己类实例的创建工作，然后由这个类来提供外部可以访问该类实例的方法  结构： singleton：创建该类自己的唯一实例，并提供一个getInstance方法，让外部来访问这个类的唯一实例 懒构造：在装载对象时不创建对象实例。只有第一次使用的时候才回去创建实例，就是在getinstan">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2016-09-14T12:34:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-创建型-单例">
+<meta name="twitter:description" content="概念： 定义：保证一个类仅有一个实例，并提供一个访问它的全局访问点 实现方式：把创建实例的权限回收，让类自身来负责自己类实例的创建工作，然后由这个类来提供外部可以访问该类实例的方法  结构： singleton：创建该类自己的唯一实例，并提供一个getInstance方法，让外部来访问这个类的唯一实例 懒构造：在装载对象时不创建对象实例。只有第一次使用的时候才回去创建实例，就是在getinstan">
+
+<link rel="canonical" href="http://dairymix.github.io/2016/09/14/java/设计模式/创建型/单例/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>设计模式-创建型-单例 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://dairymix.github.io/2016/09/14/java/设计模式/创建型/单例/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="dairymix">
+      <meta itemprop="description" content>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          设计模式-创建型-单例
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2016-09-14 20:32:25 / 修改时间：20:34:13" itemprop="dateCreated datePublished" datetime="2016-09-14T20:32:25+08:00">2016-09-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h1><ul>
+<li>定义：保证一个类仅有一个实例，并提供一个访问它的全局访问点</li>
+<li>实现方式：把创建实例的权限回收，让类自身来负责自己类实例的创建工作，然后由这个类来提供外部可以访问该类实例的方法</li>
+</ul>
+<h1 id="结构："><a href="#结构：" class="headerlink" title="结构："></a>结构：</h1><ul>
+<li>singleton：创建该类自己的唯一实例，并提供一个getInstance方法，让外部来访问这个类的唯一实例</li>
+<li>懒构造：在装载对象时不创建对象实例。只有第一次使用的时候才回去创建实例，就是在getinstance方法里判断和创建</li>
+<li>全构造：在装载对象时直接创建对象实例</li>
+</ul>
+<h1 id="功能："><a href="#功能：" class="headerlink" title="功能："></a>功能：</h1><p>  可以保证类在运行期间只会被创建一个类实例。同时该模式还提供了一个全局唯一访问这个类实例的访问点。（getInstance）<br>  不管采用哪种模式的实现方式，全局访问点是一样的。<br>  不管采用哪种模式的实现方式，都只关心类实例的创建问题，并不关心具体的业务功能。</p>
+<h1 id="范围："><a href="#范围：" class="headerlink" title="范围："></a>范围：</h1><p>  目前java里实现的单例是一个虚拟机的范围。<br>  因为装载类的功能是虚拟机的，所以一个虚拟机在通过自己的classloader装载饿汉式实现单例类的时候就会创建一个类的实例。<br>  也就是说，一个虚拟机里有很多classloader时，如果这些classloader都装载某个单例类时，它仍然会产生多个实例。<br>  如果一个机器上有多个虚拟机，那么每个虚拟机里都应该至少有一个这个类的实例，也就是说整个机器上就有很多个实例，更不是单例了。</p>
+<h1 id="命名："><a href="#命名：" class="headerlink" title="命名："></a>命名：</h1><p>  在不讨论集群环境下的单例模式的条件下，一般建议单例模式方法命名为getInstance，返回为单例类型的参数。<br>  该方法可以有参数，可能是创建类实例所需要的参数，大多数情况下是不需要的。<br>  名称通常为单例，单件，单体等，只是翻译的不同，都是指同一个模式。</p>
+<h1 id="构造："><a href="#构造：" class="headerlink" title="构造："></a>构造：</h1><p>  私有化构造方法<br>  定义存储实例的属性，把这个属性也定义成静态的（全会创建实例并填入该属性）<br>  提供获取实例的方法，把获取实例的方法变成静态的，实现控制实例的创建<br>  懒和全的区别：在实现实力创建时，懒此时才创建实例，全则直接取出之前创建好的实例返回</p>
+<h1 id="思想："><a href="#思想：" class="headerlink" title="思想："></a>思想：</h1><ul>
+<li>延迟加载：一开始不加载资源或数据，等到马上要使用这个资源或数据了才会去加载的方式。（尽可能的节约资源）</li>
+<li>缓存：<br>当某资源或数据被频繁的使用时，这些资源或数据存储在外部时，每次操作这些数据都得从数据库或硬盘上获取，速度会很慢，造成性能问题<br>把这些数据放到一个内存区，每次使用时先去内存区找是否有这些数据，有就直接使用。没有就获取它再放入该区域。<br>这样下次就能直接从内存中获取，从而节省大量的时间。<br>缓存是一种典型的空间交换时间的方案。<blockquote>
+<p>实现方式：<br>  构建一个map容器，在其中查找<br>  如果没有找到，就创建一个满足要求的数据，把它放进去<br>  如果找到了，就取出来直接使用</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h1><p>  限制（约束）对象获取范围以及创建操作<br>  懒构造是典型的时间换空间，全构造是典型的空间换时间</p>
+<h1 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h1><ul>
+<li>线程安全：<br>懒构造不加同步操作时不是线程安全的，全构造是线程安全的<br>可以使用双重检查加锁的方式来实现线程安全</li>
+<li><p>双重检查加锁：</p>
+<ul>
+<li>并不是每次getInstance方法都需要同步，而是先不同步，进入方法过后，先检查实例是否存在，如果不存在才进入下面的同步（第一重检查）进入同步块过后，再次检查实例是否存在，如果不存在，就在同步的情况下创建一个实例（第二重检查）双重检查加锁会使用关键字volatile，意思是被volatile修饰的变量的值，将不会被本地线程缓存。</li>
+<li>所有对该变量的读写都是直接操作共享内存，从而确保多个线程能正确处理该变量。</li>
+</ul>
+<blockquote>
+<p>在java1.4以及以前版本中，很多jvm对volatile关键字的实现有问题，会导致双重检查加锁的失败，因此双重检查加锁机制只能用在java5及以上版本。</p>
+</blockquote>
+<blockquote>
+<p>由于volatile关键字可能会屏蔽掉虚拟机中一些必要的代码优化，所以运行效率并不是很高。一般建议没有特别必要不要使用。</p>
+</blockquote>
+<blockquote>
+<p>也就是说，虽然可以使用双重检查加锁机制来实现线程安全的单例，但并不建议大量采用，可以根据情况来选用。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="优化："><a href="#优化：" class="headerlink" title="优化："></a>优化：</h2><p>  lazy initialization holder class：<br>    综合使用了java的类级内部类和多线程缺省同步锁的方式，同时实现了延迟加载和线程安全。</p>
+<ul>
+<li>基础内容：<ul>
+<li>类级内部类：<br>有static修饰的成员内部类。如果没有static修饰的成员内部类被称为对象级内部类。<br>类级内部类相当于其外部类的static成分，它的对象与外部类对象间不存在依赖关系，因此可直接创建。<br>对象级内部类的实例是绑定在外部对象实例中的。<br>类级内部类中可以定义静态的方法。在静态方法中只能引用外部类中的静态成员方法或成员变量。<br>类级内部类相当于其外部类的成员，只有在第一次被使用时才会被加载。</li>
+<li>多线程缺省同步锁：<br>在某些情况下，jvm已经隐含的执行了同步，可以不再需要用户来手工进行同步操作控制：<br>  静态初始化器（在静态字段上或static{}块中的初始化器）初始化数据时<br>  访问final字段时<br>  在创建线程之前创建对象时<br>  线程可以看见它将要处理的对象时</li>
+</ul>
+</li>
+<li>方案思路：<br>  采用类级内部类，在类级内部类里去创建对象实例。<br>  这样只要不使用到这个类级内部类，那就不会创建对象实例，从而同时实现延迟加载和线程安全。<br>  这个模式的优势在于，getInstance方法并没有被同步，并且只是执行一个域的访问，因此延迟初始化并没有增加任何访问成本。</li>
+</ul>
+<h2 id="枚举法："><a href="#枚举法：" class="headerlink" title="枚举法："></a>枚举法：</h2><p>  单元素的枚举类型已经成为实现singleton的最佳方法。</p>
+<ul>
+<li>基础内容：<br>  java的枚举类型实质上是功能齐全的类，因此可以有自己的属性和方法。<br>  枚举类型的基本思想是通过公有的静态final域来为每个枚举常量导出实例的类。<br>  从某个角度上看，枚举是单例的范型化，本质上单例是单元素的枚举。</li>
+<li>方案思路：<br>  编写一个包含单元素的枚举类型即可。<br>  使用该方式实现单例会更加简洁，而且无偿提供了序列化的机制，并由jvm从根本上提供保障，<br>  绝对防止多次实例化，是更简洁，高效，安全的实现方式。</li>
+</ul>
+<h1 id="本质："><a href="#本质：" class="headerlink" title="本质："></a>本质：</h1><p>  控制实例数目。<br>  控制在运行期内某些类的实例只能有一个。<br>  如果需要控制有限个（最优状态为3个）可以利用容器类（map）来缓存单例的实例</p>
+<h1 id="场景："><a href="#场景：" class="headerlink" title="场景："></a>场景：</h1><p>  当需要控制一个类的实例只能有一个，而且客户只能从一个全局访问点访问它时，可以选用单例模式</p>
+<h1 id="相关模式："><a href="#相关模式：" class="headerlink" title="相关模式："></a>相关模式：</h1><p>  所有存在对类的实例进行控制的模式都会用到。比如抽象工厂中具体工厂类就通常是一个单例。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/09/12/java/设计模式/基础/" rel="prev" title="设计模式-基础">
+      <i class="fa fa-chevron-left"></i> 设计模式-基础
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/09/15/java/设计模式/创建型/简单工厂/" rel="next" title="设计模式-创建型-简单工厂">
+      设计模式-创建型-简单工厂 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概念："><span class="nav-number">1.</span> <span class="nav-text">概念：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结构："><span class="nav-number">2.</span> <span class="nav-text">结构：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#功能："><span class="nav-number">3.</span> <span class="nav-text">功能：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#范围："><span class="nav-number">4.</span> <span class="nav-text">范围：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命名："><span class="nav-number">5.</span> <span class="nav-text">命名：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构造："><span class="nav-number">6.</span> <span class="nav-text">构造：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#思想："><span class="nav-number">7.</span> <span class="nav-text">思想：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#优点："><span class="nav-number">8.</span> <span class="nav-text">优点：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#缺点："><span class="nav-number">9.</span> <span class="nav-text">缺点：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优化："><span class="nav-number">9.1.</span> <span class="nav-text">优化：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#枚举法："><span class="nav-number">9.2.</span> <span class="nav-text">枚举法：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#本质："><span class="nav-number">10.</span> <span class="nav-text">本质：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#场景："><span class="nav-number">11.</span> <span class="nav-text">场景：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关模式："><span class="nav-number">12.</span> <span class="nav-text">相关模式：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dairymix</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-eye"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dairymix</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.8.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dairymix.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="定义：  为子系统的一组接口提供一个一致的界面而抽象出来的高层接口，这个接口使子系统更加容易使用。  可以理解为管理(创建型对象提供的)接口的接口。算时对对象簇通过接口方式进行统一管理的高层接口  界面：和gui不同，这里的界面指代从一个组件外部来看这个组件能看到的部分(外观)  接口：和interface不同，主要指外部和内部交互的通道，通常是一些（类的或interface的）方法应用场景：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-结构型-外观">
+<meta property="og:url" content="http://dairymix.github.io/2016/09/16/java/设计模式/结构型/外观/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="定义：  为子系统的一组接口提供一个一致的界面而抽象出来的高层接口，这个接口使子系统更加容易使用。  可以理解为管理(创建型对象提供的)接口的接口。算时对对象簇通过接口方式进行统一管理的高层接口  界面：和gui不同，这里的界面指代从一个组件外部来看这个组件能看到的部分(外观)  接口：和interface不同，主要指外部和内部交互的通道，通常是一些（类的或interface的）方法应用场景：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2016-09-16T13:34:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-结构型-外观">
+<meta name="twitter:description" content="定义：  为子系统的一组接口提供一个一致的界面而抽象出来的高层接口，这个接口使子系统更加容易使用。  可以理解为管理(创建型对象提供的)接口的接口。算时对对象簇通过接口方式进行统一管理的高层接口  界面：和gui不同，这里的界面指代从一个组件外部来看这个组件能看到的部分(外观)  接口：和interface不同，主要指外部和内部交互的通道，通常是一些（类的或interface的）方法应用场景：">
+
+<link rel="canonical" href="http://dairymix.github.io/2016/09/16/java/设计模式/结构型/外观/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>设计模式-结构型-外观 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://dairymix.github.io/2016/09/16/java/设计模式/结构型/外观/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="dairymix">
+      <meta itemprop="description" content>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          设计模式-结构型-外观
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2016-09-16 21:32:25 / 修改时间：21:34:13" itemprop="dateCreated datePublished" datetime="2016-09-16T21:32:25+08:00">2016-09-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>定义：<br>  为子系统的一组接口提供一个一致的界面而抽象出来的高层接口，这个接口使子系统更加容易使用。<br>  可以理解为管理(创建型对象提供的)接口的接口。算时对对象簇通过接口方式进行统一管理的高层接口<br>  界面：和gui不同，这里的界面指代从一个组件外部来看这个组件能看到的部分(外观)<br>  接口：和interface不同，主要指外部和内部交互的通道，通常是一些（类的或interface的）方法<br>应用场景：<br>  多模块整合，对接客户端<br>用途：<br>  引入外观类来简化客户端的操作，将管理整合到模块簇的集成部分。<br>结构：<br>  facade：定义子系统多个模块的高层接口，通常需要调用内部多个模块，把客户的请求代理给适当的子系统对象（facade知道各个模块对象）<br>  模块：接收facade对象的委派，实现各自功能，模块之间可能有交互（各模块之间不应该知道facade对象）<br>目的：<br>  不是给子系统添加新的功能接口，而是为了让外部减少与子系统内多个模块的交互，松散耦合，从而让外部能更简单的使用子系统。<br>  应该是包装已有功能，主要负责组合已有功能来实现客户需要，而不是添加新的实现。<br>优点：<br>  松散耦合<br>    让子系统内部的模块更容易扩展和维护。<br>  简单易用<br>    降低了客户端的开发难度，不再需要了解模块细节，并且和模块进行交互。<br>    提供了优先和缺省的可选项。对特定的客户端开发流程，可以绕过facade而与已知的模块进行直接交互（或覆盖特定模块）来进行差异化处理。<br>    facade可以被多个客户端调用，从而实现功能的共享（复用），从而统合了系统模块的集成流程（对所有客户端都一致）。<br>  更好的划分访问层次<br>    将模块整合封装在了系统部分，屏蔽了外部客户端和系统内部的直接交互，一旦需要调整整合流程，只需要改动facade即可。<br>缺点：<br>  增加系统结构层级划分的复杂度。<br>  过多的facade会容易让人迷惑。<br>  缺省的配置和自定义配置之间的覆盖组合存在逻辑上的依赖关系，不纳入管理会比较危险。<br>实现：<br>  通常实现一个facade类的单例。facade的方法本身不进行功能的处理，方法只是实现一个功能的组合调用。<br>  如果直接将外观中的方法实现成静态方法，就可以不需要创建外观对象的实例而直接调用，这种实现相当于把外观类当成一个辅助工具类实现<br>  也可以实现一个facade的interface。从而配合工厂模式来进行深层封装。只是提高了系统复杂度以及增加了客户端的调用环节。<br>  facade作为interface附带的功能是能有选择性的暴露接口的方法，尽量减少模块对子系统外提供的接口方法。<br>提示：<br>  一个模块的接口中定义的方法可以分成两部分。一部分给子系统外部使用，一部分是子系统内部的模块间相互调用时使用。<br>  有了facade接口，那么用于子系统内部的接口功能就不用暴露给子系统外部了。（避免了接口污染）<br>本质：<br>  封装交互，简化调用。<br>  facade封装了子系统外部和子系统模块内部之间的交互过程，简化了外部的调用。<br>设计原则的体现：<br>  最少知识原则。<br>场景：<br>  希望为一个复杂的子系统提供一个简单接口的时候。使用facade来实现大部分客户需要的功能，从而简化客户的使用。<br>  让客户程序和抽象类的实现部分松散耦合。使用facade来将子系统与它的客户分离开来，从而提高子系统的独立性和可移植性<br>  构建多层结构的系统的时候。使用facade作为每层的入口，可以简化层间调用，可以松散层次之间的依赖关系。<br>相关模式：<br>  中介者：<br>    中介者主要用来封装多个对象之间相互的交互，多用在系统内部的多个模块之间。<br>    外观封装的是单向的交互，是从客户端访问系统的调用，没有从系统来访问客户端的调用。<br>    中介者的实现中是需要实现具体的交互功能。<br>    外观的实现中一般是组合调用或者是转调内部实现的功能，通常外观模式本身并不实现该功能。<br>    中介者的目的主要是松散多个模块之间的耦合，把这些耦合放到中介者中去实现。<br>    外观的目的是简化客户端的调用，强调单向耦合的松散或复杂度的降低。<br>  单例：<br>    通常一个子系统只需要一个外观实例，所以可以和单例组合使用，把facade实现成单例。<br>    也可以将构造方法私有化，提供给客户端的方法实现为静态的。<br>  抽象工厂：<br>    外观类的具体实现里可以通过抽象工厂来获取所需要的模块接口。<br>    抽象工厂也可以将模块内部的实现对facade进行屏蔽，从而对逻辑层进行更进一步的隔离。<br>    使用抽象工厂后，facade也仅仅知道它从模块中获取到想要的功能，模块内部的实现细节它也不再知道。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/09/15/java/设计模式/创建型/简单工厂/" rel="prev" title="设计模式-创建型-简单工厂">
+      <i class="fa fa-chevron-left"></i> 设计模式-创建型-简单工厂
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/09/17/java/设计模式/结构型/适配器/" rel="next" title="设计模式-结构型-适配器">
+      设计模式-结构型-适配器 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dairymix</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-eye"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dairymix</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
